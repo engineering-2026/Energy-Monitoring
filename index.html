@@ -206,7 +206,7 @@ tr:hover td{background:#f0fdf4;}
   </div>
   <div class="set-body">
     <div style="font-size:11px;color:#166534;line-height:1.6;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 12px;margin-bottom:12px;">
-      ✅ <b>Sudah terhubung default</b> ke Google Sheets (Sheet ID diawali <code>1JU_y9ox6...</code>, GID <code>750612645</code>, tab "Energy Management Monitoring") — sudah dikonfirmasi bisa diakses publik. 7 tabel di dalamnya (Electric, Water, Electric+Water, IKE&CO₂, Chiller/Others, Landlord Water) otomatis kebaca dari 1 GID ini. Data <b>Kualitas Udara</b> & <b>Pemakaian Listrik Harian</b> (tab bulanan) otomatis terdeteksi dari namanya — lihat catatan di bawah.
+      ✅ <b>Sudah terhubung default</b> ke Google Sheets (Sheet ID diawali <code>1XQsDBLxx...</code>, GID <code>750612645</code>, tab "Energy Management Monitoring") — sudah dikonfirmasi bisa diakses publik. 7 tabel di dalamnya (Electric, Water, Electric+Water, IKE&CO₂, Chiller/Others, Landlord Water) otomatis kebaca dari 1 GID ini. Data <b>Kualitas Udara</b> & <b>Pemakaian Listrik Harian</b> (tab bulanan) otomatis terdeteksi dari namanya — lihat catatan di bawah.
     </div>
     <div class="set-group">
       <div class="set-label">📋 Sheet ID (Google Sheets asli)</div>
@@ -581,7 +581,7 @@ let refreshTimer = null;
 let dataSource = 'fallback'; // 'sheets' | 'fallback'
 
 // ─── CONFIG (localStorage, dengan default koneksi spreadsheet Wisma 46) ─────
-const DEFAULT_SID   = '1JU_y9ox6cplmZLMiSFUEFjtPkW-w8D7B'; // Google Sheets asli (dikonfirmasi publik & terbaca) — link terbaru dari Bapak Adi
+const DEFAULT_SID   = '1XQsDBLxxTVzqsWlMeN-lsm3yItVqtNN0dVIeSaEPVs8'; // Spreadsheet baru "Energy Management Control1" — link terbaru dari Bapak Adi (Juli 2026)
 const DEFAULT_GID1  = '750612645'; // sheet "Energy Management Monitoring" — berisi 7 tabel (Electric/Water/E+W/IKE&CO2/Chiller&Others/Landlord Water)
 // (GID manual per-tab untuk Kualitas Udara & Pemakaian Listrik Harian tidak lagi dipakai —
 // kedua data ini sekarang otomatis ditemukan lewat nama tab, lihat fetchSheetByName())
@@ -692,10 +692,8 @@ function parseDailyElectric(csvText) {
   let wbp = 0, lwbp = 0, total = 0;
   for (const r of rows) {
     const dateStr = (r[0] || '').trim();
-    // baris data tanggal — cukup pastikan ada digit sama sekali di kolom tanggal
-    // (longgar sengaja: format tanggal dari gviz JSONP bisa beda dari CSV export
-    // biasa, jadi tidak digantungkan ke satu pola regex "M/D/YY" yang kaku)
-    if (!dateStr || !/\d/.test(dateStr)) continue;
+    // baris data tanggal berformat "1/2/26 2:00" dsb — cocokkan pola tanggal di awal sel
+    if (!/^\d{1,2}\/\d{1,2}\/\d{2,4}/.test(dateStr)) continue;
     const pw = cleanNum(r[3]), pl = cleanNum(r[4]), pt = cleanNum(r[5]);
     if (!pw && !pl && !pt) continue; // hari pertama biasanya kosong (baseline stand meter)
     days.push({ date: dateStr.split(' ')[0], wbp: pw, lwbp: pl, total: pt });
